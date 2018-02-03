@@ -16,13 +16,13 @@ class Consumer
         if (extension_loaded('pcntl')) {
             define('AMQP_WITHOUT_SIGNALS', false);
 
-            pcntl_signal(SIGTERM, [$this, 'signalHandler']);
-            pcntl_signal(SIGHUP, [$this, 'signalHandler']);
-            pcntl_signal(SIGINT, [$this, 'signalHandler']);
-            pcntl_signal(SIGQUIT, [$this, 'signalHandler']);
-            pcntl_signal(SIGUSR1, [$this, 'signalHandler']);
-            pcntl_signal(SIGUSR2, [$this, 'signalHandler']);
-            pcntl_signal(SIGALRM, [$this, 'alarmHandler']);
+            pcntl_signal(SIGTERM, array($this, 'signalHandler'));
+            pcntl_signal(SIGHUP, array($this, 'signalHandler'));
+            pcntl_signal(SIGINT, array($this, 'signalHandler'));
+            pcntl_signal(SIGQUIT, array($this, 'signalHandler'));
+            pcntl_signal(SIGUSR1, array($this, 'signalHandler'));
+            pcntl_signal(SIGUSR2, array($this, 'signalHandler'));
+            pcntl_signal(SIGALRM, array($this, 'alarmHandler'));
         } else {
              echo 'Unable to process signals.' . PHP_EOL;
              exit(1);
@@ -30,10 +30,10 @@ class Consumer
 
         $ssl = null;
         if (PORT === 5671) {
-            $ssl = [
+            $ssl = array(
                 'verify_peer'      => false,
                 'verify_peer_name' => false
-            ];
+            );
         }
         $this->connection = new PhpAmqpLib\Connection\AMQPSSLConnection(
             HOST,
@@ -42,11 +42,11 @@ class Consumer
             PASS,
             VHOST,
             $ssl,
-            [
+            array(
                 'read_write_timeout' => 30,    // needs to be at least 2x heartbeat
                 'keepalive'          => false, // doesn't work with ssl connections
                 'heartbeat'          => 15
-            ]
+            )
         );
     }
 
@@ -141,9 +141,9 @@ class Consumer
             false,
             false,
             false,
-            [$this,'messageHandler'],
+            array($this,'messageHandler'),
             null,
-            ['x-cancel-on-ha-failover' => ['t', true]] // fail over to another node
+            array('x-cancel-on-ha-failover' => array('t', true)) // fail over to another node
         );
 
         echo 'Enter wait.' . PHP_EOL;
